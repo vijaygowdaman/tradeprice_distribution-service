@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<instruments>
+  <instrument>
+    <inst_type>SEDOL</inst_type>
+    <inst_id>1234567</inst_id>
+    <inst_name>ABC Securities</inst_name>
+    <trade_id>00005</trade_id>
+    <vendor>IDC</vendor>
+    <price>20.10</price>
+  </instrument>
+  <instrument>
+    <inst_type>ISIN</inst_type>
+    <inst_id>ABCD12345678</inst_id>
+    <inst_name>Man Investments</inst_name>
+    <trade_id>00006</trade_id>
+    <vendor>IDC</vendor>
+    <price>10.00</price>
+  </instrument>
+</instruments>

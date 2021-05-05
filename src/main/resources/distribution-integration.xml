@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:si="http://www.springframework.org/schema/integration"
+       xmlns:jms="http://www.springframework.org/schema/integration/jms"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/integration
+           http://www.springframework.org/schema/integration/spring-integration-1.0.xsd
+           ">
+
+	<si:channel id="validateChannel">
+	<si:channel id="umnarshallChannel">
+	<si:channel id="cacheServiceChannel">
+	<si:channel id="publishChannel">
+	
+	<bean id="distTaskExecutor" class="org.springfamework.core.task.SimpleAsyncTaskExecutor" />
+	
+	<bean id="distConnFactoryReader" class="com.ibm.jms.MQQueueConnectionFactory">
+		<property name="queueManager" value="<...>" />
+		<property name="hostName" value="<...>" />
+		<property name=port value="<...>" />
+		<property name="channel" value="<...>" />
+	</bean>
+	
+	<bean id="distListenerContainer" 
+		class="org.springfamework.jms.listener.DefaultMessaggeListenerContainer"
+		<property name="taskExecutor" ref="distTaskExecutor" />
+		<property name="connectionFactory" ref="distConnFactoryReader" />
+		<property name="destination" ref="<queue details ....." />
+		<property name="conncurrentConsumers" value="3" />
+		<property name="maxConncurrentConsumers" value="5" />
+		<property name="sessionTransacted" value="true" />
+		
+	
+	<!--  JMS inbound recieve  instrument end point	 -->
+	<jms:message-driven-channel-adapter id="vendor_jmsRecieve" channel="validateChannel" container="distListenerContainer" />
+	
+	<!-- Call the distribution service to pass through the recieved instrument and validating against the schema -->
+	<si:service-activator input-channel="validateChannel"  ref=validationService method="validateMessage" output-channel="umnarshallChannel">
+        <int:poller fixed-delay="500" />
+    </si:service-activator>
+    
+    <bean id="validationService" class="com.mizuho.dist.handler.MessageHandlerValidator">
+	      <property name="vendor" value="headers['vendor']"></property> 
+	</bean>
+	
+	<si:transformer input-channel="umnarshallChannel"  ref="unmarshallService" method="unmarshallMessage" output-channel="cacheServiceChannel" />
+	
+	<bean id="unmarshallService" class="com.mizuho.dist.translator.TranslatorImpl" />
+	
+	<si:service-activator input-channel="cacheServiceChannel"  ref=cacheService method="addObjectInCache" output-channel="publishChannel" />
+	
+	<bean id="cacheService" class="com.mizuho.dist.cache.CacheServiceImpl" />
+	
+	<si:service-activator input-channel="publishChannel"  ref=publishService method="publishMessage">
+		<property name="client1Channel" ref="client1OutChannel"></property>
+		<property name="client2Channel" ref="client2OutChannel"></property> 
+	</si:service-activator>
+	
+	<bean id="publishService" class="com.mizuho.dist.client.PublishServiceImpl" />
+	
+	<jms:outbound-channel-adapter id="client1JmsOut" destination="client1OutQueue" channel="client1OutChannel"/>
+	
+	<jms:outbound-channel-adapter id="client2JmsOut" destination="client2OutQueue" channel="client2OutChannel"/>
+	
+</beans>

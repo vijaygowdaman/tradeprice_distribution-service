@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<instruments>
+  <instrument>
+    <inst_type>SEDOL</inst_type>
+    <inst_id>1234568</inst_id>
+    <inst_name>ABC Securities</inst_name>
+    <trade_id>00001</trade_id>
+    <vendor>Reuters</vendor>
+    <price>30.00</price>
+  </instrument>
+  <instrument>
+    <inst_type>ISIN</inst_type>
+    <inst_id>TEST12345678</inst_id>
+    <inst_name>Man Investments</inst_name>
+    <trade_id>00002</trade_id>
+    <vendor>Reuters</vendor>
+    <price>10.00</price>
+  </instrument>
+  <instrument>
+    <inst_type>RIC</inst_type>
+    <inst_id>VOD.LN</inst_id>
+    <inst_name>Vodafone</inst_name>
+    <trade_id>00003</trade_id>
+    <vendor>Reuters</vendor>
+    <price>40.00</price>
+  </instrument>
+</instruments>
